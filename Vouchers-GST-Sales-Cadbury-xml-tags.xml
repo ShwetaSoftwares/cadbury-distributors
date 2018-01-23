@@ -1,0 +1,273 @@
+<!-- These XML tags are added to Excel sheet at run-time by UDIMAGIC  -->
+<XMLTAGS CELLREFERENCE="B1" xmlns:UDF="TallyUDF">
+	<!-- Specifies that this (i.e Column as mentioned above) is the key field -->
+	<COLUMNNAME.LIST>
+		<COLUMNNAME>ID</COLUMNNAME>
+		<COLUMNNAME>NAME</COLUMNNAME>
+	</COLUMNNAME.LIST>
+	<!-- Create VOUCHERTYPE Master -->
+	<MASTER TYPE="VOUCHERTYPE">
+		<NAME.LIST TYPE="String">
+			<NAME FORMULA="=if(len(trim(AC#))=0,&quot;GST Sales&quot;,AC#)"/>
+		</NAME.LIST>
+		<PARENT FORMULA="=(&quot;Sales&quot;)"/>
+		<ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+		<NUMBERINGMETHOD>Manual</NUMBERINGMETHOD>
+	</MASTER>
+	<!-- Create  Sales Ledger Master -->
+	<MASTER TYPE="LEDGER">
+		<NAME.LIST>
+			<NAME FORMULA="=if(len(trim(AD#))&gt;0,AD#,&quot;Sales GST @ &quot; &amp; (T#+V#+X#) &amp; &quot;%&quot;)"/>
+		</NAME.LIST>
+		<PARENT>Sales Accounts</PARENT>
+		<TAXTYPE>Others</TAXTYPE>
+		<ISBILLWISEON>No</ISBILLWISEON>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+		<AFFECTSSTOCK>Yes</AFFECTSSTOCK>
+		<USEFORVAT>No</USEFORVAT>
+		<GSTAPPLICABLE SKIP="=Round(T#+V#+X#,2)=0" FORMULA="=&quot;~[~ Applicable&quot;"/>
+		<!-- Type of supply : Goods or Services -->
+		<GSTTYPEOFSUPPLY>Goods</GSTTYPEOFSUPPLY>
+	</MASTER>
+	<!-- Create Party LEDGER Masters -->
+	<MASTER TYPE="LEDGER">
+		<NAME.LIST>
+			<NAME COLUMNREFERENCE="G"/>
+		</NAME.LIST>
+		<PARENT>Sundry Debtors</PARENT>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+		<ADDITIONALNAME COLUMNREFERENCE="G"/>
+		<ISBILLWISEON>Yes</ISBILLWISEON>
+		<!-- GST fields for PARTY LEDGER -->
+		<GSTREGISTRATIONTYPE FORMULA="=if(len(trim(J#))=0,&quot;Unregistered&quot;,&quot;Regular&quot;)"/>
+		<!-- GSTIN / UIN -->
+		<PARTYGSTIN FORMULA="=trim(J#)"/>
+		<COUNTRYNAME SKIP="=len(trim(H#))=0">India</COUNTRYNAME>
+		<!-- 2017-09-14: STATENAME is converted to proper-case  -->
+		<STATENAME FORMULA="=proper(trim(H#))"/>
+		<LEDSTATENAME FORMULA="=proper(trim(H#))"/>
+	</MASTER>
+	<!-- Create Trade discount Master -->
+	<MASTER TYPE="LEDGER">
+		<NAME.LIST>
+			<NAME FORMULA="=if(len(trim((AI#)))=0,&quot;Discount&quot;,AI#)"/>
+		</NAME.LIST>
+		<PARENT>Indirect Expenses</PARENT>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+		<AFFECTSSTOCK>No</AFFECTSSTOCK>
+		<GSTAPPLICABLE FORMULA="=&quot;~[~ Not Applicable&quot;"/>
+		<UDF:VATDEALERNATURE.LIST DESC="`VATDealerNature`" ISLIST="YES" TYPE="String" INDEX="10031">
+			<UDF:VATDEALERNATURE DESC="`VATDealerNature`">Discount</UDF:VATDEALERNATURE>
+		</UDF:VATDEALERNATURE.LIST>
+	</MASTER>
+	<!-- Create IGST TAX LEDGER Master -->
+	<MASTER TYPE="LEDGER">
+		<NAME.LIST>
+			<NAME FORMULA="=if(len(trim(AE#))&gt;0,AE#,if(Or(IsError(Round(T#,2)),len(trim(T#))=0,T#=0),&quot;&quot;,&quot;IGST &quot; &amp; T# &amp; &quot;%&quot;))"/>
+		</NAME.LIST>
+		<PARENT>Duties &amp; Taxes</PARENT>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+		<AFFECTSSTOCK>No</AFFECTSSTOCK>
+		<GSTAPPLICABLE FORMULA="=&quot;~[~ Applicable&quot;"/>
+		<GSTDUTYHEAD>Integrated Tax</GSTDUTYHEAD>
+		<TAXTYPE>GST</TAXTYPE>
+		<!-- <RATEOFTAXCALCULATION COLUMNREFERENCE="T"/> -->
+	</MASTER>
+	<!-- Create CGST TAX LEDGER Master -->
+	<MASTER TYPE="LEDGER">
+		<NAME.LIST>
+			<NAME FORMULA="=if(len(trim(AF#))&gt;0,AF#,if(Or(IsError(Round(V#,2)),len(trim(V#))=0,V#=0),&quot;&quot;,&quot;CGST &quot; &amp; V# &amp; &quot;%&quot;))"/>
+		</NAME.LIST>
+		<PARENT>Duties &amp; Taxes</PARENT>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+		<AFFECTSSTOCK>No</AFFECTSSTOCK>
+		<GSTAPPLICABLE FORMULA="=&quot;~[~ Applicable&quot;"/>
+		<GSTDUTYHEAD>Central Tax</GSTDUTYHEAD>
+		<TAXTYPE>GST</TAXTYPE>
+		<!-- <RATEOFTAXCALCULATION COLUMNREFERENCE="V"/> -->
+	</MASTER>
+	<!-- Create SGST TAX LEDGER Master -->
+	<MASTER TYPE="LEDGER">
+		<NAME.LIST>
+			<NAME FORMULA="=if(len(trim(AG#))&gt;0,AG#,if(Or(IsError(Round(X#,2)),len(trim(X#))=0,X#=0),&quot;&quot;,&quot;SGST &quot; &amp; X# &amp; &quot;%&quot;))"/>
+		</NAME.LIST>
+		<PARENT>Duties &amp; Taxes</PARENT>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+		<AFFECTSSTOCK>No</AFFECTSSTOCK>
+		<GSTAPPLICABLE FORMULA="=&quot;~[~ Applicable&quot;"/>
+		<GSTDUTYHEAD>State Tax</GSTDUTYHEAD>
+		<TAXTYPE>GST</TAXTYPE>
+		<!-- <RATEOFTAXCALCULATION COLUMNREFERENCE="X"/> -->
+	</MASTER>
+	<!-- Create CESS LEDGER Master -->
+	<MASTER TYPE="LEDGER">
+		<NAME.LIST>
+			<NAME FORMULA="=if(len(trim(AH#))&gt;0,AH#,if(Or(IsError(Round(Z#,2)),len(trim(Z#))=0,Z#=0),&quot;&quot;,&quot;CESS &quot; &amp; Z# &amp; &quot;%&quot;))"/>
+		</NAME.LIST>
+		<PARENT>Duties &amp; Taxes</PARENT>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+		<AFFECTSSTOCK>No</AFFECTSSTOCK>
+		<GSTAPPLICABLE FORMULA="=&quot;~[~ Applicable&quot;"/>
+		<GSTDUTYHEAD>Cess</GSTDUTYHEAD>
+		<TAXTYPE>GST</TAXTYPE>
+		<!-- <RATEOFTAXCALCULATION COLUMNREFERENCE="Z"/> -->
+	</MASTER>
+	<!-- Create a single LEDGER Master -->
+	<MASTER TYPE="LEDGER" SINGLERECORD="Yes">
+		<NAME.LIST>
+			<NAME>Round Off</NAME>
+		</NAME.LIST>
+		<PARENT>Indirect Expenses</PARENT>
+		<ISCOSTCENTRESON>No</ISCOSTCENTRESON>
+	</MASTER>
+	<!-- Create UNIT Master -->
+	<MASTER TYPE="UNIT">
+		<NAME FORMULA="=(&quot;Nos&quot;)"/>
+		<ISSIMPLEUNIT>Yes</ISSIMPLEUNIT>
+		<GSTREPUOM>NOS-NUMBERS</GSTREPUOM>
+	</MASTER>
+	<!-- Create STOCKITEM Masters -->
+	<MASTER TYPE="STOCKITEM">
+		<NAME.LIST>
+			<NAME FORMULA="=L# &amp; if(len(trim(L#))=0,&quot;&quot;,&quot; (&quot; &amp; K# &amp; &quot;)&quot;)"/>
+			<NAME COLUMNREFERENCE="K"/>
+		</NAME.LIST>
+		<OLDNAME COLUMNREFERENCE="K"/>
+		<PARENT/>
+		<BASEUNITS FORMULA="=(&quot;Nos&quot;)"/>
+		<!-- GST details -->
+		<GSTAPPLICABLE SKIP="=And(len(trim(T#))=0,len(trim(V#))=0,len(trim(X#))=0)" FORMULA="=&quot;~[~ Applicable&quot;"/>
+		<!-- Type of supply -->
+		<GSTTYPEOFSUPPLY>Goods</GSTTYPEOFSUPPLY>
+		<GSTDETAILS.LIST SKIP="=And(len(trim(T#))=0,len(trim(V#))=0,len(trim(X#))=0)">
+			<APPLICABLEFROM>20170701</APPLICABLEFROM>
+			<CALCULATIONTYPE>On Value</CALCULATIONTYPE>
+			<HSNCODE COLUMNREFERENCE="M"/>
+			<TAXABILITY FORMULA="=If(Round(T#+V#+X#,2)&gt;0,&quot;Taxable&quot;,&quot;Exempt&quot;)"/>
+			<STATEWISEDETAILS.LIST>
+				<STATENAME>~[~ Any</STATENAME>
+				<RATEDETAILS.LIST>
+					<GSTRATEDUTYHEAD>Central Tax</GSTRATEDUTYHEAD>
+					<GSTRATEVALUATIONTYPE>Based on Value</GSTRATEVALUATIONTYPE>
+					<GSTRATE FORMULA="=If(Round(V#,2)&gt;0,Round(V#,2),If(T#&gt;0,Round(T#/2,2),0))"/>
+				</RATEDETAILS.LIST>
+				<RATEDETAILS.LIST>
+					<GSTRATEDUTYHEAD>State Tax</GSTRATEDUTYHEAD>
+					<GSTRATEVALUATIONTYPE>Based on Value</GSTRATEVALUATIONTYPE>
+					<GSTRATE FORMULA="=If(Round(X#,2)&gt;0,Round(X#,2),If(T#&gt;0,Round(T#/2,2),0))"/>
+				</RATEDETAILS.LIST>
+				<RATEDETAILS.LIST>
+					<GSTRATEDUTYHEAD>Integrated Tax</GSTRATEDUTYHEAD>
+					<GSTRATEVALUATIONTYPE>Based on Value</GSTRATEVALUATIONTYPE>
+					<GSTRATE FORMULA="=If(Round(T#,2)&gt;0,Round(T#,2),Round(V#+X#,2))"/>
+				</RATEDETAILS.LIST>
+				<RATEDETAILS.LIST>
+					<GSTRATEDUTYHEAD>Cess</GSTRATEDUTYHEAD>
+					<GSTRATEVALUATIONTYPE>Based on Value</GSTRATEVALUATIONTYPE>
+					<GSTRATE COLUMNREFERENCE="Z"/>
+				</RATEDETAILS.LIST>
+			</STATEWISEDETAILS.LIST>
+			<TEMPGSTDETAILSLABRATES.LIST>
+			</TEMPGSTDETAILSLABRATES.LIST>
+		</GSTDETAILS.LIST>
+	</MASTER>
+	<VOUCHERC>
+		<GUID FORMULA="=+&quot;udi-H5JE2T-&quot; &amp; B# &amp; &quot;-&quot; &amp; (&quot;GST Sales&quot;) &amp; &quot;-&quot; &amp; A#"/>
+		<DATE COLUMNREFERENCE="A"/>
+		<EFFECTIVEDATE COLUMNREFERENCE="A"/>
+		<VOUCHERTYPENAME FORMULA="=if(len(trim(AC#))=0,&quot;GST Sales&quot;,AC#)"/>
+		<VOUCHERNUMBER COLUMNREFERENCE="B"/>
+		<REFERENCE COLUMNREFERENCE="B"/>
+		<CTID>CB</CTID>
+		<ISINVOICE>Yes</ISINVOICE>
+		<PERSISTEDVIEW>Invoice Voucher View</PERSISTEDVIEW>
+		<!-- For Purchase -->
+		<UDF:REFERENCEDATE.LIST DESC="`ReferenceDate`" ISLIST="YES" TYPE="Date">
+			<UDF:REFERENCEDATE DESC="`ReferenceDate`" COLUMNREFERENCE="A"/>
+		</UDF:REFERENCEDATE.LIST>
+		<REFERENCEDATE COLUMNREFERENCE="A"/>
+		<!-- GSTIN / UIN -->
+		<PARTYGSTIN FORMULA="=trim(J#)"/>
+		<!-- For compatibility with Tally ERP 9 Release 6.1.1 - Cash Purchase entry -->
+		<GSTREGISTRATIONTYPE FORMULA="=if(len(trim(J#))=0,&quot;Unregistered&quot;,&quot;Regular&quot;)"/>
+		<!-- 2017-09-14: STATENAME is converted to proper-case  -->
+		<STATENAME FORMULA="=proper(trim(H#))"/>
+		<PARTYNAME COLUMNREFERENCE="G"/>
+		<PARTYLEDGERNAME COLUMNREFERENCE="G"/>
+		<BASICBASEPARTYNAME COLUMNREFERENCE="G"/>
+		<BASICBUYERNAME COLUMNREFERENCE="G"/>
+		<!-- Party Ledger -->
+		<LEDGERENTRIES.LIST>
+			<LEDGERNAME COLUMNREFERENCE="G"/>
+			<ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
+			<AMOUNT FORMULA="=Round({Round(Q#,2)-Round(R#,2)+Round(U#,2)+Round(W#,2)+Round(Y#,2)+Round(AA#,2)},0)*-1"/>
+			<BILLALLOCATIONS.LIST SKIP="=Len(trim(B#))=0">
+				<NAME COLUMNREFERENCE="B"/>
+				<BILLTYPE>New Ref</BILLTYPE>
+				<AMOUNT FORMULA="=Round({Round(Q#,2)-Round(R#,2)+Round(U#,2)+Round(W#,2)+Round(Y#,2)+Round(AA#,2)},0)*-1"/>
+			</BILLALLOCATIONS.LIST>
+		</LEDGERENTRIES.LIST>
+		<!-- Trade discount Ledger -->
+		<LEDGERENTRIES.LIST SKIP="={Round(R#,2)}=0">
+			<LEDGERNAME FORMULA="=if(len(trim((AI#)))=0,&quot;Discount&quot;,AI#)"/>
+			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+			<AMOUNT FORMULA="={Round(R#,2)}*-1"/>
+		</LEDGERENTRIES.LIST>
+		<!-- IGST Ledger -->
+		<LEDGERENTRIES.LIST GROUPBY="=if(len(trim(AE#))=0,trim(T#),trim(AE#))" SKIP="={Round(U#,2)}=0">
+			<LEDGERNAME FORMULA="=if(len(trim(AE#))&gt;0,AE#,if(Or(IsError(Round(T#,2)),len(trim(T#))=0,T#=0),&quot;&quot;,&quot;IGST &quot; &amp; T# &amp; &quot;%&quot;))"/>
+			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+			<AMOUNT FORMULA="={Round(U#,2)}*1"/>
+		</LEDGERENTRIES.LIST>
+		<!-- CGST Ledger -->
+		<LEDGERENTRIES.LIST GROUPBY="=if(len(trim(AF#))=0,trim(V#),trim(AF#))" SKIP="={Round(W#,2)}=0">
+			<LEDGERNAME FORMULA="=if(len(trim(AF#))&gt;0,AF#,if(Or(IsError(Round(V#,2)),len(trim(V#))=0,V#=0),&quot;&quot;,&quot;CGST &quot; &amp; V# &amp; &quot;%&quot;))"/>
+			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+			<AMOUNT FORMULA="={Round(W#,2)}*1"/>
+		</LEDGERENTRIES.LIST>
+		<!-- SGST Ledger -->
+		<LEDGERENTRIES.LIST GROUPBY="=if(len(trim(AG#))=0,trim(X#),trim(AG#))" SKIP="={Round(Y#,2)}=0">
+			<LEDGERNAME FORMULA="=if(len(trim(AG#))&gt;0,AG#,if(Or(IsError(Round(X#,2)),len(trim(X#))=0,X#=0),&quot;&quot;,&quot;SGST &quot; &amp; X# &amp; &quot;%&quot;))"/>
+			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+			<AMOUNT FORMULA="={Round(Y#,2)}*1"/>
+		</LEDGERENTRIES.LIST>
+		<!-- Cess Ledger -->
+		<LEDGERENTRIES.LIST GROUPBY="=if(len(trim(AH#))=0,trim(Z#),trim(AH#))" SKIP="={Round(AA#,2)}=0">
+			<LEDGERNAME FORMULA="=if(len(trim(AH#))&gt;0,AH#,if(Or(IsError(Round(Z#,2)),len(trim(Z#))=0,Z#=0),&quot;&quot;,&quot;CESS &quot; &amp; Z# &amp; &quot;%&quot;))"/>
+			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+			<AMOUNT FORMULA="={Round(AA#,2)}*1"/>
+		</LEDGERENTRIES.LIST>
+		<!-- Round Off Ledger -->
+		<LEDGERENTRIES.LIST SKIP="=Or(Not(trim((&quot;Yes&quot;))=&quot;yes&quot;),Round(Round({Round(Q#,2)-Round(R#,2)+Round(U#,2)+Round(W#,2)+Round(Y#,2)+Round(AA#,2)},0)-Round({Round(Q#,2)-Round(R#,2)+Round(U#,2)+Round(W#,2)+Round(Y#,2)+Round(AA#,2)},2),2)=0)">
+			<LEDGERNAME>Round Off</LEDGERNAME>
+			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+			<AMOUNT FORMULA="=Round(Round({Round(Q#,2)-Round(R#,2)+Round(U#,2)+Round(W#,2)+Round(Y#,2)+Round(AA#,2)},0)-Round({Round(Q#,2)-Round(R#,2)+Round(U#,2)+Round(W#,2)+Round(Y#,2)+Round(AA#,2)},2),2)*1"/>
+		</LEDGERENTRIES.LIST>
+		<!-- StockItems -->
+		<ALLINVENTORYENTRIES.LIST SCROLL="YES" SKIP="=Len(trim(K#))=0">
+			<STOCKITEMNAME COLUMNREFERENCE="K"/>
+			<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+			<RATE COLUMNREFERENCE="O"/>
+			<AMOUNT FORMULA="=Round(Q#,2)*1"/>
+			<ACTUALQTY COLUMNREFERENCE="N"/>
+			<BILLEDQTY COLUMNREFERENCE="N"/>
+			<ACCOUNTINGALLOCATIONS.LIST>
+				<LEDGERNAME FORMULA="=if(len(trim(AD#))&gt;0,AD#,&quot;Sales GST @ &quot; &amp; (T#+V#+X#) &amp; &quot;%&quot;)"/>
+				<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
+				<AMOUNT FORMULA="=Round(Q#,2)*1"/>
+			</ACCOUNTINGALLOCATIONS.LIST>
+			<BATCHALLOCATIONS.LIST>
+				<GODOWNNAME>Main Location</GODOWNNAME>
+				<BATCHNAME>Primary Batch</BATCHNAME>
+				<DESTINATIONGODOWNNAME>Main Location</DESTINATIONGODOWNNAME>
+				<AMOUNT FORMULA="=Round(Q#,2)*1"/>
+				<ACTUALQTY COLUMNREFERENCE="N"/>
+				<BILLEDQTY COLUMNREFERENCE="N"/>
+			</BATCHALLOCATIONS.LIST>
+			<UDF:EIDISCOUNTAMT.LIST SKIP="=Round(R#,2)=0" DESC="`EI DiscountAmt`" ISLIST="YES" TYPE="Amount" INDEX="10003">
+				<UDF:EIDISCOUNTAMT DESC="`EI DiscountAmt`" COLUMNREFERENCE="R"/>
+			</UDF:EIDISCOUNTAMT.LIST>
+		</ALLINVENTORYENTRIES.LIST>
+	</VOUCHERC>
+</XMLTAGS>
+
